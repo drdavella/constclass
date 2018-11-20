@@ -50,3 +50,25 @@ def test_constmethod_warning():
 
     with pytest.warns(ConstWarning):
         instance.const()
+
+
+def test_constmethod_complex():
+
+    @constclass
+    class Thing:
+        def __init__(self, a, b):
+            self.a = a
+            self.b = dict(b=b)
+
+        def modify(self):
+            self.b, self.a = self.a, self.b
+
+        @constmethod
+        def const(self):
+            self.b['b'] = 10
+            return self.a, self.b
+
+    instance = Thing(5, 6)
+
+    with pytest.raises(ConstError):
+        instance.const()
